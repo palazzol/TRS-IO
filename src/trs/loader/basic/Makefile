@@ -2,7 +2,7 @@
 CC = sdcc
 AS = sdasz80
 LD = sdldz80
-IHEX2CMD = ../../ihex2cmd/ihex2cmd
+IHEX2CMD = ../../TRS-LIB/ihex2cmd/ihex2cmd
 CFLAGS = -mz80 --std-sdcc99 --opt-code-size
 ASFLAGS = -l
 LDFLAGS = -mjwx -b _CODE=0xfa00 -l $(SDCC_PATH)/lib/z80/z80.lib
@@ -21,7 +21,7 @@ OBJS = \
 	$(IHEX2CMD) $< $@
 
 all: loader_basic.cmd
-	cp loader_basic.cmd ../../esp/components/retrostore/
+	cp loader_basic.cmd ../../../esp/components/retrostore/
 
 loader_basic.ihx : $(OBJS) Makefile
 	$(LD) $(LDFLAGS) -i loader_basic.ihx $(OBJS)

@@ -1,10 +1,10 @@
 
 #include "retrostore.h"
 #include "load.h"
-#include "trs-lib.h"
+#include <trs-lib.h>
 
 #define BOOT_LOADER_ADDR 0x4300
-#include "../../loader/cmd/loader_cmd.c"
+#include "../loader/cmd/loader_cmd.c"
 
 
 static void copy_boot_loader()
@@ -42,10 +42,10 @@ static uint8_t check() {
   }
   first_time = false;
 
-  status = scan();
-  
-  if (status == RS_STATUS_NO_RETROSTORE_CARD) {
-    wnd_popup("No RetroStore card found!");
+  status = trs_io_status();
+
+  if (status == TRS_IO_STATUS_NO_TRS_IO) {
+    wnd_popup("No TRS-IO card present!");
     while(1);
   }
 
@@ -54,8 +54,8 @@ static uint8_t check() {
     wnd_popup("Incompatible RetroStore card version!");
     while(1);
   }
-  
-  set_screen_to_background();
+
+  //set_screen_to_background();
   return status;
 }
   
@@ -66,61 +66,81 @@ static uint8_t check() {
 #define MENU_WIFI 3
 #define MENU_HELP 4
 #define MENU_ABOUT 5
+#define MENU_EXIT 6
 
 static menu_item_t main_menu_items[] = {
-  {MENU_BROWSE, "Browse RetroStore"},
-  {MENU_SEARCH, "Search RetroStore"},
-  {MENU_WIFI, "Configure WiFi"},
-  {MENU_HELP, "Help"},
-  {MENU_ABOUT, "About"}
+  MENU_ITEM(MENU_BROWSE, "Browse RetroStore"),
+  MENU_ITEM(MENU_SEARCH, "Search RetroStore"),
+  MENU_ITEM(MENU_WIFI, "Configure WiFi"),
+  MENU_ITEM(MENU_HELP, "Help"),
+  MENU_ITEM(MENU_ABOUT, "About"),
+  MENU_ITEM(MENU_EXIT, "Exit"),
+  MENU_ITEM_END
 };
 
-MENU(main_menu, "RetroStore");
+static menu_t main_menu = {
+  .title = "RetroStore",
+  .items = main_menu_items
+};
 
 
 static menu_item_t main_menu_with_xray_items[] = {
-  {MENU_BROWSE, "Browse RetroStore"},
-  {MENU_SEARCH, "Search RetroStore"},
-  {MENU_LOAD, "Load XRAY state"},
-  {MENU_WIFI, "Configure WiFi"},
-  {MENU_HELP, "Help"},
-  {MENU_ABOUT, "About"}
+  MENU_ITEM(MENU_BROWSE, "Browse RetroStore"),
+  MENU_ITEM(MENU_SEARCH, "Search RetroStore"),
+  MENU_ITEM(MENU_LOAD, "Load XRAY state"),
+  MENU_ITEM(MENU_WIFI, "Configure WiFi"),
+  MENU_ITEM(MENU_HELP, "Help"),
+  MENU_ITEM(MENU_ABOUT, "About"),
+  MENU_ITEM(MENU_EXIT, "Exit"),
+  MENU_ITEM_END
 };
 
-MENU(main_menu_with_xray, "RetroStore");
+static menu_t main_menu_with_xray = {
+  .title = "RetroStore",
+  .items = main_menu_with_xray_items
+};
 
 
 static menu_item_t main_menu_wifi_not_needed_items[] = {
-  {MENU_BROWSE, "Browse RetroStore"},
-  {MENU_SEARCH, "Search RetroStore"},
-  {MENU_HELP, "Help"},
-  {MENU_ABOUT, "About"}
+  MENU_ITEM(MENU_BROWSE, "Browse RetroStore"),
+  MENU_ITEM(MENU_SEARCH, "Search RetroStore"),
+  MENU_ITEM(MENU_HELP, "Help"),
+  MENU_ITEM(MENU_ABOUT, "About"),
+  MENU_ITEM(MENU_EXIT, "Exit"),
+  MENU_ITEM_END
 };
 
-MENU(main_menu_wifi_not_needed, "RetroStore");
+static menu_t main_menu_wifi_not_needed = {
+  .title = "RetroStore",
+  .items = main_menu_wifi_not_needed_items
+};
 
 
 static menu_item_t main_menu_not_connected_items[] = {
-  {MENU_WIFI, "Configure WiFi"},
-  {MENU_HELP, "Help"},
-  {MENU_ABOUT, "About"}
+  MENU_ITEM(MENU_WIFI, "Configure WiFi"),
+  MENU_ITEM(MENU_HELP, "Help"),
+  MENU_ITEM(MENU_ABOUT, "About"),
+  MENU_ITEM(MENU_EXIT, "Exit"),
+  MENU_ITEM_END
 };
 
-MENU(main_menu_not_connected, "Offline");
+static menu_t main_menu_not_connected = {
+  .title = "Offline",
+  .items = main_menu_not_connected_items
+};
 
 
 static window_t wnd;
 
-void main() {
+int main() {
   int idx;
   bool show_from_left = false;
   menu_t* the_menu;
   uint8_t status;
   
-  // For M4, turn on MIII memory map. Nop on a MIII
-  out(0x84, 0);
+  set_m3_mem_map();
 
-  init_hardware();
+  init_trs_lib();
   
   init_window(&wnd, 0, 0, 0, 0);
 
@@ -141,7 +161,10 @@ void main() {
       break;
     }
   
-    status = menu(the_menu, show_from_left, false);
+    status = menu(the_menu, show_from_left, true);
+    if (status == MENU_ABORT || status == MENU_EXIT) {
+      break;
+    }
     switch (status) {
     case MENU_BROWSE:
       wnd_popup("Loading...");
@@ -173,4 +196,8 @@ void main() {
     }
     show_from_left = true;
   }
+
+  exit_trs_lib();
+
+  return 0;
 }

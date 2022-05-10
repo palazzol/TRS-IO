@@ -12,7 +12,7 @@
 	xxd -i $< $@
 
 all: loader_frehd.bin
-	cp loader_frehd.bin ../../esp/main
+	cp loader_frehd.bin ../../../esp/main
 
 clean:
 	rm -f *.bin *.c

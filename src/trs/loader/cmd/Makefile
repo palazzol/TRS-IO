@@ -12,7 +12,7 @@
 	xxd -i $< $@
 
 all: loader_cmd.c
-	cp loader_cmd.bin ../../esp/components/retrostore/
+	cp loader_cmd.bin ../../../esp/components/retrostore/
 
 clean:
 	rm -f *.bin *.c

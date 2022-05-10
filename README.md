@@ -239,7 +239,7 @@ floppy disks. TRS-IO acts as a gateway to the <a
 href="https://retrostore.org">RetroStore</a>. This requires to run a
 program on the TRS-80 that interfaces with TRS-IO. This program is
 available as a regular <a
-href="https://github.com/apuder/tpk/raw/master/src/main/resources/apps/rsclient/RSCLIENT.CMD">CMD</a>
+href="https://github.com/apuder/TRS-IO/blob/master/src/esp/components/retrostore/rsclient.cmd">CMD</a>
 executable.  For TRS-80 machines with attached physical floppy disks,
 this CMD executable can be copied to a floppy disk and launched the
 usual way. For TRS-80 machines that have neither floppy disk drives

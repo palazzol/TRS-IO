@@ -1,24 +1,24 @@
 
 #include "retrostore.h"
 #include "version.h"
-#include "trs-lib.h"
+#include <trs-lib.h>
 
 static window_t wnd;
 
 static void print_details(window_t* wnd, uint8_t cmd, const char* label)
 {
-  char ch[2] = ".";
+  char ch;
   
-  wnd_print(wnd, false, label);
-  out(TRS_IO_PORT, TRS_IO_CORE_MODULE_ID);
-  out(TRS_IO_PORT, cmd);
+  wnd_print(wnd, label);
+  out31(TRS_IO_CORE_MODULE_ID);
+  out31(cmd);
   wait_for_esp();
   while (true) {
-    ch[0] = in(TRS_IO_PORT);
-    if (ch[0] == '\0') {
+    ch = in31();
+    if (ch == '\0') {
       break;
     }
-    wnd_print(wnd, false, ch);
+    wnd_print(wnd, "%c", ch);
   }
   wnd_cr(wnd);
 }
@@ -34,42 +34,36 @@ void about()
   init_window(&wnd, 0, 3, 0, 0);
   header("About");
 
-  scan_result = scan();
+  scan_result = trs_io_status();
   get_trs_io_version(&revision, &version);
 
-  wnd_print(&wnd, false, "TRS-IO hardware revision    : ");
+  wnd_print(&wnd, "TRS-IO hardware revision    : ");
   if (scan_result == RS_STATUS_NO_RETROSTORE_CARD) {
-    wnd_print(&wnd, false, "not present");
+    wnd_print(&wnd, "not present");
   } else {
-    wnd_print_int(&wnd, revision);
+    wnd_print(&wnd, "%d", revision);
   }
   wnd_cr(&wnd);
   
-  wnd_print(&wnd, false, "TRS-IO core module version  : ");
+  wnd_print(&wnd, "TRS-IO core module version  : ");
   if (scan_result == RS_STATUS_NO_RETROSTORE_CARD) {
-    wnd_print(&wnd, false, "-");
+    wnd_print(&wnd, "-");
   } else {
-    wnd_print_int(&wnd, version >> 8);
-    wnd_print(&wnd, false, ".");
-    wnd_print_int(&wnd, version & 0xff);
+    wnd_print(&wnd, "%d.%d", version >> 8, version & 0xff);
   }
   wnd_cr(&wnd);
 
   get_retrostore_version(&version);
-  wnd_print(&wnd, false, "RetroStore module version   : ");
+  wnd_print(&wnd, "RetroStore module version   : ");
   if (scan_result == RS_STATUS_NO_RETROSTORE_CARD) {
     wnd_print(&wnd, false, "-");
   } else {
-    wnd_print_int(&wnd, version >> 8);
-    wnd_print(&wnd, false, ".");
-    wnd_print_int(&wnd, version & 0xff);
+    wnd_print(&wnd, "%d.%d", version >> 8, version & 0xff);
   }
   wnd_cr(&wnd);
 
-  wnd_print(&wnd, false, "RetroStore client version   : ");
-  wnd_print_int(&wnd, RS_CLIENT_VERSION_MAJOR);
-  wnd_print(&wnd, false, ".");
-  wnd_print_int(&wnd, RS_CLIENT_VERSION_MINOR);
+  wnd_print(&wnd, "RetroStore client version   : ");
+  wnd_print(&wnd, "%d.%d", RS_CLIENT_VERSION_MAJOR, RS_CLIENT_VERSION_MINOR);
   wnd_cr(&wnd);
 
   switch(scan_result) {
@@ -94,8 +88,7 @@ void about()
   default:
     status = "";
   }
-  wnd_print(&wnd, false, "TRS-IO online status        : ");
-  wnd_print(&wnd, false, status);
+  wnd_print(&wnd, "TRS-IO online status        : %s", status);
   wnd_cr(&wnd);
 
   print_details(&wnd, TRS_IO_SEND_WIFI_SSID, "WiFi SSID: ");

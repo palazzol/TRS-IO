@@ -1,7 +1,7 @@
 
 MAKE = make
 
-DIRS = ihex2cmd loader trs
+DIRS = trs
 
 
 all:

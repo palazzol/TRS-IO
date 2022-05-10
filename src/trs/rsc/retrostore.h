@@ -2,7 +2,6 @@
 #ifndef __RETROSTORE_H__
 #define __RETROSTORE_H__
 
-#include "inout.h"
 #include "wifi.h"
 #include "browse.h"
 #include "about.h"

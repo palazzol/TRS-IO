@@ -11,8 +11,6 @@
 #define RS_STATUS_WIFI_NOT_CONFIGURED 4
 #define RS_STATUS_NO_RETROSTORE_CARD 0xff
 
-void wait_for_esp();
-uint8_t scan();
 void get_trs_io_version(uint8_t* revision, uint16_t* version);
 void get_retrostore_version(uint16_t* version);
 bool has_xray_support();
