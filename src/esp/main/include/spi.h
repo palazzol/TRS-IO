@@ -63,14 +63,16 @@ void spi_set_screen_color(uint8_t color);
 //-----M1 & MIII configuration--------------------------------------
 
 // SPI
-#define SPI_SPEED_MHZ 10
 
 #ifdef CONFIG_TRS_IO_MODEL_1
+#define SPI_SPEED_MHZ 10
 #define SPI_PIN_NUM_MISO GPIO_NUM_22
 #define SPI_PIN_NUM_MOSI GPIO_NUM_21
 #define SPI_PIN_NUM_CLK GPIO_NUM_25
 #define SPI_PIN_NUM_CS_MCP23S17 GPIO_NUM_26
 #else
+// TRS-IO-M3 routes SPI through GPIO Matrix which prevents it to run at 10 MHz
+#define SPI_SPEED_MHZ 7
 #define SPI_PIN_NUM_MISO GPIO_NUM_17
 #define SPI_PIN_NUM_MOSI GPIO_NUM_13
 #define SPI_PIN_NUM_CLK GPIO_NUM_14
