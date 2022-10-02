@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "TRSIO-rescue")(type "Legacy")(uri "${KIPRJMOD}/TRSIO-rescue.lib")(options "")(descr ""))
+  (lib (name "TRSIO")(type "Legacy")(uri "${KIPRJMOD}/TRSIO.lib")(options "")(descr ""))
+  (lib (name "HiLetgoESP32s")(type "Legacy")(uri "${KIPRJMOD}/HiLetgoESP32s.lib")(options "")(descr ""))
+)
